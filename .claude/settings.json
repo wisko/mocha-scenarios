@@ -8,7 +8,7 @@
       "Bash(npx eslint *)",
       "Bash(npx prettier *)"
     ],
-    "ask": ["Bash(git commit *)", "Bash(git push *)", "Bash(git tag *)"],
+    "ask": ["Bash(git commit *)", "Bash(git tag *)"],
     "deny": ["Bash(npm publish *)"]
   },
   "hooks": {
