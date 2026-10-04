@@ -1,0 +1,70 @@
+{
+  "name": "mocha-scenarios",
+  "version": "0.1.0",
+  "description": "A mocha BDD UI (Feature / Scenario / Given / When / Then)",
+  "keywords": [
+    "mocha",
+    "gherkin",
+    "cucumber",
+    "bdd",
+    "given-when-then",
+    "feature",
+    "scenario",
+    "test",
+    "testing",
+    "mocha-cakes-2"
+  ],
+  "license": "MIT",
+  "author": "William Chuang Sköld",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wisko/mocha-scenarios.git"
+  },
+  "homepage": "https://github.com/wisko/mocha-scenarios#readme",
+  "bugs": {
+    "url": "https://github.com/wisko/mocha-scenarios/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./globals": "./dist/globals.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "typecheck": "tsc --noEmit",
+    "pretest": "npm run build",
+    "test": "mocha",
+    "posttest": "npm run lint",
+    "lint": "eslint --cache . && prettier --check .",
+    "lint:fix": "eslint --cache --fix . && prettier --write .",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm test"
+  },
+  "peerDependencies": {
+    "mocha": ">=11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "~20.19.0",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "mocha": "^12.0.0",
+    "prettier": "^3.9.9",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.0"
+  }
+}

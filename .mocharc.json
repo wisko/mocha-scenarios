@@ -1,0 +1,5 @@
+{
+  "require": "./dist/index.js",
+  "ui": "mocha-scenarios",
+  "spec": "test/**/*.test.js"
+}
