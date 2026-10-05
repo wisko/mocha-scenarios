@@ -4,8 +4,6 @@
 
 `mocha-scenarios` is an npm package providing a mocha UI (`--ui mocha-scenarios`) that adds Gherkin vocabulary (`Feature` / `Scenario` / `Given` / `When` / `Then` / `And` / `But`, lower-case aliases, and `beforeEachFeature` / `afterEachFeature` / `beforeEachScenario` / `afterEachScenario`) on top of mocha's `bdd` interface. `README.md` is the behavioural specification; keep code, `src/globals.ts`, tests and README in sync.
 
-Local planning context (current state, implementation notes, TODO) lives in the untracked `.claude/` folder when present; read `.claude/PLAN.md` before changing `src/`.
-
 ## Layout
 
 ```
