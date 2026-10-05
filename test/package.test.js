@@ -25,4 +25,17 @@ describe('package entry points', () => {
     assert.equal(globals.Feature, 'readonly');
     assert.equal(globals.beforeEachScenario, 'readonly');
   });
+
+  it('installs exactly the globals listed in mocha-scenarios/globals on top of bdd', () => {
+    const installed = (bind) => {
+      const root = new Mocha.Suite('', new Mocha.Context(), true);
+      const context = {};
+      bind(root);
+      root.emit(Mocha.Suite.constants.EVENT_FILE_PRE_REQUIRE, context, '/spec.js', { options: {} });
+      return Object.keys(context);
+    };
+    const bdd = installed(Mocha.interfaces.bdd);
+    const added = installed(ui).filter((name) => !bdd.includes(name));
+    assert.deepEqual(added.sort(), Object.keys(globals).sort());
+  });
 });

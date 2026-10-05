@@ -1,0 +1,7 @@
+Feature: Delayed root suite
+  Scenario: declared asynchronously
+beforeEachScenario
+    ✔ Given a step
+
+1 passing, 0 pending, 0 failing
+exit code: 0

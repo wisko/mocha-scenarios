@@ -1,0 +1,12 @@
+Feature: Feature in a.js
+beforeEachFeature (a.js)
+  Scenario: a
+beforeEachScenario (a.js)
+    ✔ Given a step
+Feature: Feature in b.js
+  Scenario: b
+beforeEachScenario (b.js)
+    ✔ Given a step
+
+2 passing, 0 pending, 0 failing
+exit code: 0

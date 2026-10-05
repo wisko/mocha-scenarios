@@ -1,0 +1,13 @@
+Feature: Failing steps and hooks
+  Scenario: with a failing step
+    ✔ Given a passing step
+    ✖ When a step fails
+      step failed
+    ✔ Then later steps still run
+Feature: With a failing inherited hook
+  Scenario: whose steps are not reached
+    ✖ "before all" hook: seed data for "Given a step"
+      seeding failed
+
+2 passing, 0 pending, 2 failing
+exit code: 2

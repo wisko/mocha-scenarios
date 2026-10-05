@@ -8,6 +8,7 @@ These tests describe your application's behavior in plain language, creating fea
 - [Setup](#setup)
 - [Usage](#usage)
 - [Migrating from mocha-cakes-2](#migrating-from-mocha-cakes-2)
+- [Development](#development)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 
@@ -52,6 +53,14 @@ or set it up on an existing instance:
 ```js
 const mocha = new Mocha();
 mocha.ui('mocha-scenarios');
+```
+
+### TypeScript
+
+The package ships ambient declarations for its globals. Add it to `types` in the `tsconfig.json` that covers your spec files, next to mocha's own types from `@types/mocha`:
+
+```json
+{ "compilerOptions": { "types": ["mocha", "mocha-scenarios"] } }
 ```
 
 ### ESLint
@@ -149,6 +158,20 @@ The vocabulary, labels and reporter output are the same, so most suites run unch
 - `describe`/`context` inside a `Feature` or `Scenario` throws instead of being silently accepted.
 - `.only` uses mocha's native mechanism, so several `.only` blocks and titles with regex characters work.
 - Works on mocha 12.
+
+## Development
+
+To setup the project, run the following:
+
+```sh
+nvm use
+npm install
+npm test
+```
+
+See `AGENTS.md` for repository conventions.
+
+To add a behaviour, add a directory under `test/features/` with a `*.feature.js` file, run `UPDATE_FEATURES=1 npm test` to write its `expected.txt` from the CLI run, and review the transcript before keeping it.
 
 ## License
 

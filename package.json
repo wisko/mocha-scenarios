@@ -45,7 +45,8 @@
     "build": "rm -rf dist && tsc",
     "typecheck": "tsc --noEmit",
     "pretest": "npm run build",
-    "test": "mocha",
+    "test": "mocha && npm run test:packaging",
+    "test:packaging": "node scripts/pack-test.js",
     "posttest": "npm run lint",
     "lint": "eslint --cache . && prettier --check .",
     "lint:fix": "eslint --cache --fix . && prettier --write .",
@@ -53,7 +54,13 @@
     "prepublishOnly": "npm test"
   },
   "peerDependencies": {
+    "@types/mocha": ">=10",
     "mocha": ">=11"
+  },
+  "peerDependenciesMeta": {
+    "@types/mocha": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

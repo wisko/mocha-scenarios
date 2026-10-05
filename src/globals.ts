@@ -1,24 +1,7 @@
-type ScenarioGlobal =
-  | 'Feature'
-  | 'Scenario'
-  | 'Given'
-  | 'When'
-  | 'Then'
-  | 'And'
-  | 'But'
-  | 'feature'
-  | 'scenario'
-  | 'given'
-  | 'when'
-  | 'then'
-  | 'and'
-  | 'but'
-  | 'beforeEachFeature'
-  | 'afterEachFeature'
-  | 'beforeEachScenario'
-  | 'afterEachScenario';
+import type { ScenarioGlobals as Installed } from './index.js';
 
-type ScenarioGlobals = Readonly<Record<ScenarioGlobal, 'readonly'>>;
+// Keyed by the UI's own globals interface, so a name added there is a compile error here until listed.
+type ScenarioGlobals = Readonly<Record<keyof Installed, 'readonly'>>;
 
 /**
  * ESLint `languageOptions.globals` entry for spec files written with this UI.

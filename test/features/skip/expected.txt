@@ -1,0 +1,17 @@
+Feature: Skipping
+  Scenario: runs normally
+    ✔ Given a step
+    - Given a skipped step
+    - an xit step
+    - When a step skips itself
+    - Then a pending step without a body
+  Scenario: is skipped entirely
+    - Given a step that becomes pending
+    - Then another one
+Feature: A skipped feature
+  Scenario: with a scenario
+    - Given a step
+    - Then another step
+
+1 passing, 8 pending, 0 failing
+exit code: 0

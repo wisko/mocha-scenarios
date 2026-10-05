@@ -1,0 +1,15 @@
+Feature: Nesting
+  Scenario: outer
+beforeEachScenario (Feature)
+    ✔ Given a step in the outer scenario
+    Scenario: inner
+beforeEachScenario (Feature)
+beforeEachScenario (outer Scenario)
+      ✔ Then a step in the inner scenario
+  Feature: nested feature
+    Scenario: inside
+beforeEachScenario (Feature)
+      ✔ Given a step
+
+3 passing, 0 pending, 0 failing
+exit code: 0

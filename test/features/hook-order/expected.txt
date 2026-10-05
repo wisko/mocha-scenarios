@@ -1,0 +1,32 @@
+Feature: Hook ordering
+beforeEachFeature (file, named by function)
+before (Feature)
+  Scenario: first
+beforeEachScenario (file)
+beforeEachScenario (Feature)
+before (Scenario first)
+beforeEach (Scenario first)
+    ✔ Given a step
+beforeEach (Scenario first)
+    ✔ Then another step
+after (Scenario first)
+afterEachScenario (Feature)
+afterEachScenario (file)
+  Scenario: second
+beforeEachScenario (file)
+beforeEachScenario (Feature)
+    ✔ Given a step
+afterEachScenario (Feature)
+afterEachScenario (file)
+after (Feature)
+afterEachFeature (file, named by title)
+Feature: Another feature
+beforeEachFeature (file, named by function)
+  Scenario: third
+beforeEachScenario (file)
+    ✔ Given a step
+afterEachScenario (file)
+afterEachFeature (file, named by title)
+
+4 passing, 0 pending, 0 failing
+exit code: 0

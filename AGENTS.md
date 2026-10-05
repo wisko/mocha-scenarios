@@ -9,12 +9,24 @@ Local planning context (current state, implementation notes, TODO) lives in the 
 ## Layout
 
 ```
-src/index.ts      the UI; registers itself in Mocha.interfaces; default export + 'module.exports' export
-src/globals.ts    ESLint globals object; same dual export
-test/*.test.js    plain ESM JavaScript, run by mocha with the built package as its own UI
-dist/             tsc output (gitignored, published; the only thing in `files`)
-.mocharc.json     require ./dist/index.js, ui mocha-scenarios, spec test/**/*.test.js
+src/index.ts            the UI; registers itself in Mocha.interfaces; default export + 'module.exports' export;
+                        `declare global` block with the ambient typings of the globals
+src/globals.ts          ESLint globals object; same dual export; keyed by the UI's `ScenarioGlobals` interface
+test/*.test.js          plain ESM JavaScript, run by mocha with the built package as its own UI
+test/features/<name>/   behavioural fixtures: *.feature.js written with the UI + expected.txt (+ options.json)
+test/helpers/           child-process runner, API entry point and the transcript reporter for the fixtures
+scripts/pack-test.js    packs the tarball, installs it into a temp project with mocha and runs a spec there
+dist/                   tsc output (gitignored, published; the only thing in `files`)
+.mocharc.json           require ./dist/index.js, ui mocha-scenarios, spec test/**/*.test.js
 ```
+
+## Tests
+
+Three layers, all run by `npm test`:
+
+- `test/package.test.js` checks the entry points and library interfaces in-process.
+- `test/features.test.js` runs every directory under `test/features/` twice in a child process: through the mocha CLI and through the programmatic API (`test/helpers/run-api.js`). Both use `test/helpers/reporter.js`, which prints the suite tree without colours, durations or stack traces, so `console.log` calls in the fixture interleave with it in event order. The whole run (reporter output, exit code, `Error: message` lines from stderr) is compared verbatim to the directory's `expected.txt`. A directory may hold several `*.feature.js` files and an `options.json` (`{ "delay": true }`).
+- `scripts/pack-test.js` is the only test that exercises `files`, the `exports` map, mocha's `require(id)` lookup of `--ui mocha-scenarios` through a real `node_modules`, and the ambient typings (a consumer `tsc` run with `types: ["mocha-scenarios"]`). It installs the tarball plus the mocha and `@types/mocha` versions from the repo's `node_modules`, so the CI matrix's mocha override carries over.
 
 ## Module format and loading constraints (do not break)
 
@@ -42,13 +54,14 @@ dist/             tsc output (gitignored, published; the only thing in `files`)
 
 Use Node 26 (`.nvmrc`; `nvm use`). The devDependencies (mocha 12, TS 6, ESLint 10) need Node `>= 20.19 / 22.12`; older Node fails `npm install` because of `engine-strict`.
 
-| Command             | Does                                                                               |
-| ------------------- | ---------------------------------------------------------------------------------- |
-| `npm test`          | `pretest` builds (`rm -rf dist && tsc`) → `mocha` → `posttest` runs `npm run lint` |
-| `npm run build`     | clean `dist/` and compile                                                          |
-| `npm run typecheck` | `tsc --noEmit`                                                                     |
-| `npm run lint`      | `eslint --cache .` then `prettier --check .`                                       |
-| `npm run lint:fix`  | eslint `--fix` then `prettier --write .`                                           |
+| Command                  | Does                                                                                                |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| `npm test`               | `pretest` builds → `mocha` → `npm run test:packaging` → `posttest` runs `npm run lint`              |
+| `npm run test:packaging` | pack, install the tarball into a temp project with mocha, run a spec there (`scripts/pack-test.js`) |
+| `npm run build`          | clean `dist/` and compile                                                                           |
+| `npm run typecheck`      | `tsc --noEmit`                                                                                      |
+| `npm run lint`           | `eslint --cache .` then `prettier --check .`                                                        |
+| `npm run lint:fix`       | eslint `--fix` then `prettier --write .`                                                            |
 
 Tests run against `dist/`, so a code change without a rebuild is not tested; always go through `npm test`. `prepack` builds and `prepublishOnly` runs the full test; never run `npm publish` yourself.
 
@@ -58,7 +71,7 @@ Local runs use mocha 12 from the lockfile; CI (`.github/workflows/ci.yml`) also 
 
 ## Lint and formatting rules
 
-- ESLint flat config (`eslint.config.js`): `@eslint/js` recommended everywhere, `typescript-eslint` `recommendedTypeChecked` on `src/**/*.ts` (type-aware via `projectService`), Node globals for `*.js`, Node + mocha globals for `test/**/*.js`, `eslint-config-prettier` last. `dist/` is ignored. `--cache` writes `.eslintcache` (gitignored). ESLint and Prettier are deliberately separate; Prettier is not run as an ESLint rule.
+- ESLint flat config (`eslint.config.js`): `@eslint/js` recommended everywhere, `typescript-eslint` `recommendedTypeChecked` on `src/**/*.ts` (type-aware via `projectService`), Node globals for `*.js`, Node + mocha globals for `test/**/*.js`, the package's own `mocha-scenarios/globals` for `test/features/**/*.feature.js` (imported from `dist/`, so lint needs a build; `npm test` guarantees one), `eslint-config-prettier` after the presets. A few extra rules apply everywhere (`curly`, `eqeqeq`, `no-console`, `no-eval`, `no-nested-ternary`, `no-var`, `prefer-const`, `prefer-arrow-callback`); `no-console` is off where printing is the purpose: `scripts/`, the transcript reporter and the fixtures. `dist/` is ignored.
 - Prettier: 120 columns, single quotes, 2 spaces, LF. `prettier --check .` covers **everything** not in `.prettierignore`, so Markdown, JSON and YAML must be prettier-clean too. Hand-formatted blocks (e.g. tables) can be excluded with `<!-- prettier-ignore -->` on the line above.
 - `README.md` opens with a list of its `##` sections; update it when adding, removing or renaming one.
 
@@ -71,4 +84,4 @@ Local runs use mocha 12 from the lockfile; CI (`.github/workflows/ci.yml`) also 
 
 - The maintainer reviews and verifies every change before it is committed. Do not commit, push, tag or publish unless asked; leave changes in the working tree and report what was verified.
 - CI runs `npm test` on Node 26 for mocha 11 and 12 on push to `main` and on pull requests.
-- Any new global must be added to `src/globals.ts`, covered by a test in `test/`, and documented in `README.md`.
+- Any new global must be added to the `ScenarioGlobals` interface and the `declare global` block in `src/index.ts`, to `src/globals.ts`, covered by a fixture under `test/features/`, and documented in `README.md`. The interface key type and the globals test in `test/package.test.js` catch a missing entry.
