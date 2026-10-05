@@ -1,0 +1,10 @@
+Feature: lower-case aliases
+  Scenario: reads like prose
+    ✔ Given a precondition
+    ✔ When an action happens
+    ✔ Then a result follows
+    ✔ And another result follows
+    ✔ But an unwanted result does not
+
+5 passing, 0 pending, 0 failing
+exit code: 0

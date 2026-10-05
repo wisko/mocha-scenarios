@@ -1,0 +1,3 @@
+
+exit code: 1
+Error: describe('with valid credentials') is not allowed inside Feature 'Login'; use Scenario

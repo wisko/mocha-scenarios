@@ -1,0 +1,9 @@
+Feature: Exclusive blocks
+  Scenario: selected (with regex chars like * and ?)
+    ✔ Given a step
+    ✔ Then another step
+  Scenario: also selected [0-9]+
+    ✔ Given only this step
+
+3 passing, 0 pending, 0 failing
+exit code: 0

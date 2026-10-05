@@ -1,0 +1,18 @@
+A plain describe
+  ✔ still works as in bdd
+  with a nested context
+    ✔ specify works too
+  Feature: declared inside describe
+    Scenario: inherits hooks from the describe
+beforeEachScenario (describe)
+      ✔ allows plain it inside a Scenario
+      ✔ Given a step
+A pending describe
+  - is pending
+A skipped describe
+  Feature: inside it
+    Scenario: is pending too
+      - Given a step
+
+4 passing, 2 pending, 0 failing
+exit code: 0

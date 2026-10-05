@@ -1,0 +1,10 @@
+Feature: Suite context
+  Scenario: as this in steps and hooks
+beforeEachScenario hook has a mocha context: timeout 1234
+    ✔ Given a step can change its timeout
+    ✔ Then a step sees its own title
+    ✔ And a step can use done
+    ✔ And a step can return a promise
+
+4 passing, 0 pending, 0 failing
+exit code: 0
