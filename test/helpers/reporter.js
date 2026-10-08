@@ -5,7 +5,7 @@ const { EVENT_RUN_END, EVENT_SUITE_BEGIN, EVENT_SUITE_END, EVENT_TEST_FAIL, EVEN
   Mocha.Runner.constants;
 
 /**
- * Prints the suite tree without colours, durations or stack traces, so a run's transcript can be
+ * Prints the suite tree without colors, durations or stack traces, so a run's transcript can be
  * compared verbatim. Fixture output written to stdout interleaves with it in event order.
  */
 class TranscriptReporter extends Mocha.reporters.Base {

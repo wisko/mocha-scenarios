@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # Pinned to the lowest Node line in `engines`; moves together with it.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # typescript-eslint requires typescript <6.1.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

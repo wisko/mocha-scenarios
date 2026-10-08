@@ -8,6 +8,7 @@ These tests describe your application's behavior in plain language, creating fea
 - [Setup](#setup)
 - [Usage](#usage)
 - [Migrating from mocha-cakes-2](#migrating-from-mocha-cakes-2)
+- [Versioning and support](#versioning-and-support)
 - [Development](#development)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -159,19 +160,13 @@ The vocabulary, labels and reporter output are the same, so most suites run unch
 - `.only` uses mocha's native mechanism, so several `.only` blocks and titles with regex characters work.
 - Works on mocha 12.
 
+## Versioning and support
+
+This package follows [semantic versioning](https://semver.org). The public API is the globals and hooks described under [Usage](#usage), the reporter labels, the `mocha-scenarios` and `mocha-scenarios/globals` entry points, and the ambient typings. Dropping a Node or mocha version is a major release. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+
 ## Development
 
-To setup the project, run the following:
-
-```sh
-nvm use
-npm install
-npm test
-```
-
-See `AGENTS.md` for repository conventions.
-
-To add a behaviour, add a directory under `test/features/` with a `*.feature.js` file, run `UPDATE_FEATURES=1 npm test` to write its `expected.txt` from the CLI run, and review the transcript before keeping it.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the test layers and how to add a behavior, and `AGENTS.md` for repository conventions.
 
 ## License
 

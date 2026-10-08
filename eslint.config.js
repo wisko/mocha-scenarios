@@ -43,7 +43,7 @@ export default defineConfig(
     languageOptions: { globals: globals.mocha },
   },
   {
-    // Spec files run by the behavioural tests are written with the UI itself.
+    // Spec files run by the behavioral tests are written with the UI itself.
     files: ['test/features/**/*.feature.js'],
     languageOptions: { globals: scenarioGlobals },
   },

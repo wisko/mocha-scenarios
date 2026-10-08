@@ -1,7 +1,7 @@
 {
   "name": "mocha-scenarios",
   "version": "0.1.0",
-  "description": "A mocha BDD UI (Feature / Scenario / Given / When / Then)",
+  "description": "Feature style testing for mocha",
   "keywords": [
     "mocha",
     "gherkin",
