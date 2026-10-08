@@ -35,3 +35,14 @@ jobs:
 
       - name: Test
         run: npm test
+
+  # The ruleset on `main` requires this single check
+  summary:
+    name: Test matrix
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check matrix result
+        if: needs.test.result != 'success'
+        run: exit 1

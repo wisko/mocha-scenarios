@@ -1,0 +1,33 @@
+name: Bug report
+description: Something does not behave as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happens
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: feature
+    attributes:
+      label: Minimal feature file
+      description: The smallest `*.feature.js` that shows the problem.
+      render: js
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Reporter output
+      description: The output of `mocha --ui mocha-scenarios` for that file.
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: mocha-scenarios, mocha and Node.
+      placeholder: mocha-scenarios 1.0.0, mocha 12.0.0, Node 22.12.0
+    validations:
+      required: true

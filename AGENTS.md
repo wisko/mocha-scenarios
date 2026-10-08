@@ -2,7 +2,7 @@
 
 ## What this is
 
-`mocha-scenarios` is an npm package providing a mocha UI (`--ui mocha-scenarios`) that adds Gherkin vocabulary (`Feature` / `Scenario` / `Given` / `When` / `Then` / `And` / `But`, lower-case aliases, and `beforeEachFeature` / `afterEachFeature` / `beforeEachScenario` / `afterEachScenario`) on top of mocha's `bdd` interface. `README.md` is the behavioural specification; keep code, `src/globals.ts`, tests and README in sync.
+`mocha-scenarios` is an npm package providing a mocha UI (`--ui mocha-scenarios`) that adds Gherkin vocabulary (`Feature` / `Scenario` / `Given` / `When` / `Then` / `And` / `But`, lower-case aliases, and `beforeEachFeature` / `afterEachFeature` / `beforeEachScenario` / `afterEachScenario`) on top of mocha's `bdd` interface. `README.md` is the behavioral specification; keep code, `src/globals.ts`, tests and README in sync.
 
 ## Layout
 
@@ -11,7 +11,7 @@ src/index.ts            the UI; registers itself in Mocha.interfaces; default ex
                         `declare global` block with the ambient typings of the globals
 src/globals.ts          ESLint globals object; same dual export; keyed by the UI's `ScenarioGlobals` interface
 test/*.test.js          plain ESM JavaScript, run by mocha with the built package as its own UI
-test/features/<name>/   behavioural fixtures: *.feature.js written with the UI + expected.txt (+ options.json)
+test/features/<name>/   behavioral fixtures: *.feature.js written with the UI + expected.txt (+ options.json)
 test/helpers/           child-process runner, API entry point and the transcript reporter for the fixtures
 scripts/pack-test.js    packs the tarball, installs it into a temp project with mocha and runs a spec there
 dist/                   tsc output (gitignored, published; the only thing in `files`)
@@ -23,7 +23,7 @@ dist/                   tsc output (gitignored, published; the only thing in `fi
 Three layers, all run by `npm test`:
 
 - `test/package.test.js` checks the entry points and library interfaces in-process.
-- `test/features.test.js` runs every directory under `test/features/` twice in a child process: through the mocha CLI and through the programmatic API (`test/helpers/run-api.js`). Both use `test/helpers/reporter.js`, which prints the suite tree without colours, durations or stack traces, so `console.log` calls in the fixture interleave with it in event order. The whole run (reporter output, exit code, `Error: message` lines from stderr) is compared verbatim to the directory's `expected.txt`. A directory may hold several `*.feature.js` files and an `options.json` (`{ "delay": true }`).
+- `test/features.test.js` runs every directory under `test/features/` twice in a child process: through the mocha CLI and through the programmatic API (`test/helpers/run-api.js`). Both use `test/helpers/reporter.js`, which prints the suite tree without colors, durations or stack traces, so `console.log` calls in the fixture interleave with it in event order. The whole run (reporter output, exit code, `Error: message` lines from stderr) is compared verbatim to the directory's `expected.txt`. A directory may hold several `*.feature.js` files and an `options.json` (`{ "delay": true }`).
 - `scripts/pack-test.js` is the only test that exercises `files`, the `exports` map, mocha's `require(id)` lookup of `--ui mocha-scenarios` through a real `node_modules`, and the ambient typings (a consumer `tsc` run with `types: ["mocha-scenarios"]`). It installs the tarball plus the mocha and `@types/mocha` versions from the repo's `node_modules`, so the CI matrix's mocha override carries over.
 
 ## Module format and loading constraints (do not break)
@@ -80,6 +80,7 @@ Local runs use mocha 12 from the lockfile; CI (`.github/workflows/ci.yml`) also 
 
 ## Workflow
 
+- Anything a user of the package would notice gets a line under `## [Unreleased]` in `CHANGELOG.md` (Keep a Changelog format). The release moves that section under the version heading.
 - The maintainer reviews and verifies every change before it is committed. Do not commit, push, tag or publish unless asked; leave changes in the working tree and report what was verified.
 - CI runs `npm test` on Node 26 for mocha 11 and 12 on push to `main` and on pull requests.
 - Any new global must be added to the `ScenarioGlobals` interface and the `declare global` block in `src/index.ts`, to `src/globals.ts`, covered by a fixture under `test/features/`, and documented in `README.md`. The interface key type and the globals test in `test/package.test.js` catch a missing entry.
