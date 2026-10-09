@@ -16,6 +16,10 @@ jobs:
         # tested: ESLint 10 requires ^22.13.0 on that line, so `npm ci` fails under engine-strict.
         node: [20, 22, 24, 26]
         mocha: ['11', '12']
+        include:
+          # Tests the lockfile's mocha as is, so a Dependabot bump to a new major is run.
+          - node: 26
+            mocha: lockfile
     name: Node ${{ matrix.node }} / mocha ${{ matrix.mocha }}
     steps:
       - name: Checkout
@@ -31,6 +35,7 @@ jobs:
         run: npm ci
 
       - name: Install specific mocha version
+        if: matrix.mocha != 'lockfile'
         run: npm install --no-save mocha@${{ matrix.mocha }}
 
       - name: Test
