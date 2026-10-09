@@ -1,5 +1,10 @@
 # Mocha Scenarios
 
+[![CI](https://github.com/wisko/mocha-scenarios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/wisko/mocha-scenarios/actions/workflows/ci.yml?query=branch%3Amain)
+[![npm version](https://img.shields.io/npm/v/mocha-scenarios?logo=npm&color=387ED1&logoColor=BBB)](https://www.npmjs.com/package/mocha-scenarios)
+[![Node version](https://img.shields.io/node/v/mocha-scenarios?logo=nodedotjs&color=5FA04E&logoColor=BBB)](https://www.npmjs.com/package/mocha-scenarios)
+[![License](https://img.shields.io/npm/l/mocha-scenarios)](LICENSE)
+
 Feature-style testing for the [mocha](https://mochajs.org) testing framework.
 
 These tests describe your application's behavior in plain language, creating feature documentation that will never drift from your code.

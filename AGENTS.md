@@ -6,17 +6,15 @@
 
 ## Layout
 
-```
-src/index.ts            the UI; registers itself in Mocha.interfaces; default export + 'module.exports' export;
-                        `declare global` block with the ambient typings of the globals
-src/globals.ts          ESLint globals object; same dual export; keyed by the UI's `ScenarioGlobals` interface
-test/*.test.js          plain ESM JavaScript, run by mocha with the built package as its own UI
-test/features/<name>/   behavioral fixtures: *.feature.js written with the UI + expected.txt (+ options.json)
-test/helpers/           child-process runner, API entry point and the transcript reporter for the fixtures
-scripts/pack-test.js    packs the tarball, installs it into a temp project with mocha and runs a spec there
-dist/                   tsc output (gitignored, published; the only thing in `files`)
-.mocharc.json           require ./dist/index.js, ui mocha-scenarios, spec test/**/*.test.js
-```
+- `src/index.ts` - the UI; registers itself in `Mocha.interfaces`; default export + `'module.exports'` export; `declare global` block with the ambient typings of the globals
+- `src/globals.ts` - ESLint globals object; same dual export; keyed by the UI's `ScenarioGlobals` interface
+- `test/*.test.js` - plain ESM JavaScript, run by mocha with the built package as its own UI
+- `test/features/<name>/` - behavioral fixtures: `*.feature.js` written with the UI + `expected.txt` (+ `options.json`)
+- `test/helpers/` - child-process runner, API entry point and the transcript reporter for the fixtures
+- `scripts/pack-test.js` - packs the tarball, installs it into a temp project with mocha and runs a spec there
+- `scripts/changelog-section.js` - prints one version's `CHANGELOG.md` section; the publish workflow's check and Release text
+- `dist/` - tsc output (gitignored, published; the only thing in `files`)
+- `.mocharc.json` - `require ./dist/index.js`, `ui mocha-scenarios`, `spec test/**/*.test.js`
 
 ## Tests
 
@@ -83,4 +81,10 @@ Local runs use mocha 12 from the lockfile; CI (`.github/workflows/ci.yml`) also 
 - Anything a user of the package would notice gets a line under `## [Unreleased]` in `CHANGELOG.md` (Keep a Changelog format). The release moves that section under the version heading.
 - The maintainer reviews and verifies every change before it is committed. Do not commit, push, tag or publish unless asked; leave changes in the working tree and report what was verified.
 - CI runs `npm test` on Node 26 for mocha 11 and 12 on push to `main` and on pull requests.
+- Releases: the maintainer moves the `Unreleased` changelog section under the new version, sets the
+  version in `package.json` and `package-lock.json`, commits "Release X.Y.Z" on `main` and pushes
+  the tag `vX.Y.Z`. The tag push runs `.github/workflows/publish.yml`: it verifies that the tag
+  matches the package version, that the commit is on `main` and that the changelog section exists,
+  then, after approval of the `npm` environment, publishes with npm trusted publishing (provenance
+  is automatic) and creates the GitHub Release from the changelog section.
 - Any new global must be added to the `ScenarioGlobals` interface and the `declare global` block in `src/index.ts`, to `src/globals.ts`, covered by a fixture under `test/features/`, and documented in `README.md`. The interface key type and the globals test in `test/package.test.js` catch a missing entry.

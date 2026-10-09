@@ -1,0 +1,94 @@
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+# A re-pushed tag replaces the run waiting for approval.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Runs before the environment approval, so a bad tag is rejected without anyone being asked.
+  verify:
+    name: Verify release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # The ancestor check needs the history of main.
+          fetch-depth: 0
+
+      - name: Tag matches package.json
+        id: version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          case "$version" in
+            *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Tagged commit is on main
+        run: git merge-base --is-ancestor HEAD origin/main
+
+      - name: CHANGELOG.md has the section
+        run: node scripts/changelog-section.js
+
+  publish:
+    name: Publish to npm
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/mocha-scenarios/v/${{ needs.verify.outputs.version }}
+    permissions:
+      # id-token lets npm verify the run through OIDC (trusted publishing); contents lets
+      # `gh release create` write the Release.
+      id-token: write
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      # Trusted publishing needs npm >= 11.5.1; the npm bundled with Node may be older.
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Install
+        run: npm ci
+
+      # `prepublishOnly` runs the full test suite first. Provenance is generated automatically
+      # with trusted publishing. Prereleases go under the `next` dist-tag.
+      - name: Publish
+        run: npm publish --tag "${{ needs.verify.outputs.prerelease == 'true' && 'next' || 'latest' }}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ needs.verify.outputs.prerelease }}
+        run: |
+          node scripts/changelog-section.js > release-notes.md
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file release-notes.md \
+            $([ "$PRERELEASE" = true ] && echo --prerelease)
