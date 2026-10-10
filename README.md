@@ -117,6 +117,8 @@ Each runs once before (or after) every `Feature` or `Scenario` declared beneath 
 
 Mocha's standard `before`, `after`, `beforeEach` and `afterEach` hooks can also be used. Note that `beforeEach` runs before every single step of a scenario.
 
+Mocha's `describe` and `context` can group Features, Scenarios and steps at any level. They are reported with their plain title, and the hooks above apply through them.
+
 ### Basic test structure
 
 ```js
@@ -151,8 +153,7 @@ Feature: Login
 
 ### Rules
 
-- Mocha's `describe` and `context` are not allowed inside a `Feature` or `Scenario`. Use `Scenario`. Breaking this throws.
-- Declaring a `beforeEach*`/`afterEach*` hook after a `Feature` or `Scenario` in the same block throws, since it would otherwise silently skip the earlier ones.
+- Declaring a `beforeEach*`/`afterEach*` hook after a `Feature`, `Scenario`, `describe` or `context` in the same block throws, since it would otherwise silently skip the earlier ones.
 - Everything inside a skipped `Feature` or `Scenario` is reported as pending.
 
 ## Migrating from mocha-cakes-2
@@ -161,7 +162,6 @@ The vocabulary, labels and reporter output are the same, so most suites run unch
 
 - Inherited hooks run **outermost first**: a `beforeEachScenario` on the `Feature` runs before one declared in a nested `Scenario`, and before the Scenario's own `before` hooks. The `after` hooks run in reverse order, innermost first.
 - Hooks declared at the top level of a file no longer leak into other files. For truly global hooks, use mocha's [root hook plugin](https://mochajs.org/features/root-hook-plugins/).
-- `describe`/`context` inside a `Feature` or `Scenario` throws instead of being silently accepted.
 - `.only` uses mocha's native mechanism, so several `.only` blocks and titles with regex characters work.
 - Works on mocha 12.
 

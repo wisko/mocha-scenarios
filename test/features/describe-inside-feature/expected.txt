@@ -1,3 +1,21 @@
+Feature: Login
+  with a password
+    ✔ allows plain it inside the group
+    for a registered user
+      Scenario: valid credentials
+beforeEachScenario (Feature)
+beforeEachScenario (describe)
+        ✔ Given a registered user
+        ✔ Then they see their profile page
+  Scenario: with groups inside
+beforeEachScenario (Feature)
+    first attempt
+      ✔ Given a step grouped by describe
+    second attempt
+      ✔ Given a step grouped by context
+  with a one-time code
+    Scenario: is pending
+      - Given a step
 
-exit code: 1
-Error: describe('with valid credentials') is not allowed inside Feature 'Login'; use Scenario
+5 passing, 1 pending, 0 failing
+exit code: 0

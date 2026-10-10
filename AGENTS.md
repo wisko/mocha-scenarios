@@ -11,6 +11,7 @@
 - `test/*.test.js` - plain ESM JavaScript, run by mocha with the built package as its own UI
 - `test/features/<name>/` - behavioral fixtures: `*.feature.js` written with the UI + `expected.txt` (+ `options.json`)
 - `test/helpers/` - child-process runner, API entry point and the transcript reporter for the fixtures
+- `test/tsconfig.json` - editor-only: puts the test files and `src/index.ts` in one program so the ambient globals resolve in the tests; `checkJs` is off and no script uses it
 - `scripts/pack-test.js` - packs the tarball, installs it into a temp project with mocha and runs a spec there
 - `scripts/changelog-section.js` - prints one version's `CHANGELOG.md` section; the publish workflow's check and Release text
 - `dist/` - tsc output (gitignored, published; the only thing in `files`)
