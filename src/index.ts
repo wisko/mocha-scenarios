@@ -10,11 +10,6 @@ type Hooks = Partial<Record<HookName, { title: string; fn: Callback | undefined 
 // spec file: there the suite is the root suite shared by every file, so the file path is used instead.
 type Scope = Mocha.Suite | string;
 
-interface Block {
-  kind: BlockKind;
-  title: string;
-}
-
 /**
  * `Given` / `When` / `Then` / `And` / `But`: mocha's `it` with the keyword prefixed to the title.
  */
@@ -84,15 +79,14 @@ const mochaScenarios: UiInterface = (rootSuite) => {
   Mocha.interfaces.bdd(rootSuite);
 
   const hooks = new Map<Scope, Hooks>();
-  // The first Feature/Scenario declared in a scope: registering a hook there afterwards throws,
-  // because the hook could not apply to that block.
-  const firstBlock = new Map<Scope, Block>();
-  const blocks = new WeakMap<Mocha.Suite, Block>();
+  // The first suite declared in a scope: registering a hook there afterwards throws, because the
+  // hook could not apply to that suite or anything in it.
+  const firstSuite = new Map<Scope, string>();
 
   rootSuite.on(Mocha.Suite.constants.EVENT_FILE_PRE_REQUIRE, (context, file) => {
     // Watch mode loads a file again on every run.
     hooks.delete(file);
-    firstBlock.delete(file);
+    firstSuite.delete(file);
 
     const { describe, it } = context;
     // mocha accepts a skipped suite without a body; @types/mocha requires one.
@@ -133,33 +127,36 @@ const mochaScenarios: UiInterface = (rootSuite) => {
       }
     };
 
-    const track = (fn: SuiteBody): SuiteBody =>
-      function tracked(this: Mocha.Suite) {
-        return within(this, () => fn.call(this));
-      };
+    const declared = (name: string, title: string): void => {
+      const scope = scopeOf(current);
+      if (!firstSuite.has(scope)) {
+        firstSuite.set(scope, `${name} '${title}'`);
+      }
+    };
 
-    const guarded =
+    // describe/context stay plain mocha suites; wrapping them keeps `current` in sync so that
+    // hooks reach the Features and Scenarios grouped under them.
+    const grouping =
       <R>(name: string, create: (title: string, fn?: SuiteBody) => R) =>
       (title: string, fn?: SuiteBody): R => {
-        const block = blocks.get(current);
-        if (block) {
-          throw new Error(`${name}('${title}') is not allowed inside ${block.kind} '${block.title}'; use Scenario`);
-        }
-        return create(title, fn && track(fn));
+        declared(name, title);
+        return create(
+          title,
+          fn &&
+            function tracked(this: Mocha.Suite) {
+              return within(this, () => fn.call(this));
+            },
+        );
       };
 
     const block = (kind: BlockKind): Mocha.SuiteFunction => {
       const declare =
         <R>(create: (title: string, fn?: SuiteBody) => R) =>
         (title: string, fn?: SuiteBody): R => {
-          const scope = scopeOf(current);
-          if (!firstBlock.has(scope)) {
-            firstBlock.set(scope, { kind, title });
-          }
+          declared(kind, title);
           const body =
             fn &&
             function body(this: Mocha.Suite) {
-              blocks.set(this, { kind, title });
               return within(this, () => {
                 attachInherited(this, `beforeEach${kind}`, 'beforeAll');
                 const result = fn.call(this);
@@ -187,9 +184,9 @@ const mochaScenarios: UiInterface = (rootSuite) => {
       (name: HookName): Mocha.HookFunction =>
       (titleOrFn: string | Callback, fn?: Callback) => {
         const scope = scopeOf(current);
-        const first = firstBlock.get(scope);
+        const first = firstSuite.get(scope);
         if (first) {
-          throw new Error(`${name}() must be declared before ${first.kind} '${first.title}' in the same block`);
+          throw new Error(`${name}() must be declared before ${first} in the same block`);
         }
         const entry =
           typeof titleOrFn === 'function' ? { title: titleOrFn.name, fn: titleOrFn } : { title: titleOrFn, fn };
@@ -198,11 +195,15 @@ const mochaScenarios: UiInterface = (rootSuite) => {
         hooks.set(scope, scopeHooks);
       };
 
-    context.describe = context.context = Object.assign(guarded('describe', describe), {
-      only: guarded('describe.only', describe.only),
-      skip: guarded('describe.skip', describeSkip),
-    });
-    context.xdescribe = context.xcontext = guarded('xdescribe', describeSkip);
+    const suite = (name: 'describe' | 'context'): Mocha.SuiteFunction =>
+      Object.assign(grouping(name, describe), {
+        only: grouping(`${name}.only`, describe.only),
+        skip: grouping(`${name}.skip`, describeSkip),
+      });
+    context.describe = suite('describe');
+    context.context = suite('context');
+    context.xdescribe = grouping('xdescribe', describeSkip);
+    context.xcontext = grouping('xcontext', describeSkip);
 
     const Feature = block('Feature');
     const Scenario = block('Scenario');

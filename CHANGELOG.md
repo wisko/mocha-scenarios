@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Changed
+
+- `describe` and `context` are allowed inside a `Feature` or `Scenario` as plain grouping suites, and the `beforeEach*`/`afterEach*` hooks apply through them. Declaring such a hook after a `describe` or `context` in the same block throws, as it already does after a `Feature` or `Scenario`.
+
 ## [0.1.0] - 2026-10-08
 
 ### Added
