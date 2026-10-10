@@ -53,7 +53,8 @@ Feature('Typed consumer', () => {
 const projectDir = await mkdtemp(path.join(os.tmpdir(), 'mocha-scenarios-consumer-'));
 try {
   const { stdout } = await npm(['pack', '--json', '--pack-destination', projectDir], rootDir);
-  const [tarball] = JSON.parse(stdout);
+  // npm 11 prints an array of tarballs, npm 12 an object keyed by package name.
+  const [tarball] = Object.values(JSON.parse(stdout));
   const packed = tarball.files.map((file) => file.path).sort();
   assert.deepEqual(packed, [
     'LICENSE',
