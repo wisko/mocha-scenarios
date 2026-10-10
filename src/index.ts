@@ -105,7 +105,8 @@ const mochaScenarios: UiInterface = (rootSuite) => {
   const firstSuite = new Map<Scope, string>();
 
   rootSuite.on(Mocha.Suite.constants.EVENT_FILE_PRE_REQUIRE, (context, file) => {
-    // Watch mode loads a file again on every run.
+    // Reloading a file into the same root suite (`unloadFiles()` then `loadFilesAsync()`) emits this event
+    // for it again; watch mode instead applies the UI to a new root suite on every rerun.
     hooks.delete(file);
     firstSuite.delete(file);
 
