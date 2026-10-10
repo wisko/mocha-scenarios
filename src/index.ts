@@ -14,10 +14,13 @@ type Scope = Mocha.Suite | string;
  * `Given` / `When` / `Then` / `And` / `But`: mocha's `it` with the keyword prefixed to the title.
  */
 export interface StepFunction {
+  /** A step of a Scenario: mocha's `it` with the keyword prefixed to the title. */
   (title: string, fn?: Mocha.Func): Mocha.Test;
   (title: string, fn?: Mocha.AsyncFunc): Mocha.Test;
+  /** Runs only this step, like `it.only`. */
   only(title: string, fn?: Mocha.Func): Mocha.Test;
   only(title: string, fn?: Mocha.AsyncFunc): Mocha.Test;
+  /** Reports this step as pending, like `it.skip`. */
   skip(title: string, fn?: Mocha.Func): Mocha.Test;
   skip(title: string, fn?: Mocha.AsyncFunc): Mocha.Test;
 }
@@ -47,23 +50,41 @@ export interface ScenarioGlobals {
 }
 
 declare global {
+  /** Groups the Scenarios of one Feature. Reported as `Feature: <title>`. */
   var Feature: Mocha.SuiteFunction;
+  /** One Scenario of a Feature. Reported as `Scenario: <title>`. */
   var Scenario: Mocha.SuiteFunction;
+  /** A step of a Scenario: mocha's `it` with the keyword prefixed to the title. */
   var Given: StepFunction;
+  /** A step of a Scenario: mocha's `it` with the keyword prefixed to the title. */
   var When: StepFunction;
+  /** A step of a Scenario: mocha's `it` with the keyword prefixed to the title. */
   var Then: StepFunction;
+  /** A step of a Scenario: mocha's `it` with the keyword prefixed to the title. */
   var And: StepFunction;
+  /** A step of a Scenario: mocha's `it` with the keyword prefixed to the title. */
   var But: StepFunction;
+  /** Alias of `Feature`. */
   var feature: Mocha.SuiteFunction;
+  /** Alias of `Scenario`. */
   var scenario: Mocha.SuiteFunction;
+  /** Alias of `Given`. */
   var given: StepFunction;
+  /** Alias of `When`. */
   var when: StepFunction;
+  /** Alias of `Then`. */
   var then: StepFunction;
+  /** Alias of `And`. */
   var and: StepFunction;
+  /** Alias of `But`. */
   var but: StepFunction;
+  /** Runs once before every Feature declared beneath it, outermost hooks first. */
   var beforeEachFeature: Mocha.HookFunction;
+  /** Runs once after every Feature declared beneath it, innermost hooks first. */
   var afterEachFeature: Mocha.HookFunction;
+  /** Runs once before every Scenario declared beneath it, outermost hooks first. */
   var beforeEachScenario: Mocha.HookFunction;
+  /** Runs once after every Scenario declared beneath it, innermost hooks first. */
   var afterEachScenario: Mocha.HookFunction;
 }
 
