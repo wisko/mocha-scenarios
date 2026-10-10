@@ -156,6 +156,13 @@ Feature: Login
 - Declaring a `beforeEach*`/`afterEach*` hook after a `Feature`, `Scenario`, `describe` or `context` in the same block throws, since it would otherwise silently skip the earlier ones.
 - Everything inside a skipped `Feature` or `Scenario` is reported as pending.
 
+### Watch and parallel mode
+
+Both work without further setup: `--watch` applies the UI afresh on every rerun, and every `--parallel` worker loads it through the same `--require` and `--ui` options as the main process. Two of mocha's own restrictions apply:
+
+- [Watch mode does not support ES module test files](https://mochajs.org/explainers/nodejs-native-esm-support/): Node cannot drop them from its module cache, so a rerun finds no tests. Use CommonJS spec files with `--watch`.
+- [`.only` cannot be used in parallel mode](https://mochajs.org/features/parallel-mode/), and neither can `--delay`, `--file` or `--sort`.
+
 ## Migrating from mocha-cakes-2
 
 The vocabulary, labels and reporter output are the same, so most suites run unchanged. The differences are:
