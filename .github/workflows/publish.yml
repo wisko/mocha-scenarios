@@ -7,13 +7,13 @@ on:
 permissions:
   contents: read
 
-# A re-pushed tag replaces the run waiting for approval.
+# A re-pushed tag replaces a run of the same tag that is still going.
 concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # Runs before the environment approval, so a bad tag is rejected without anyone being asked.
+  # Rejects a bad tag before anything reaches npm.
   verify:
     name: Verify release
     runs-on: ubuntu-latest
@@ -72,18 +72,20 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: npm
 
-      # Trusted publishing needs npm >= 11.5.1; the npm bundled with Node may be older.
+      # `npm stage publish` needs npm >= 11.15; the npm bundled with Node may be older.
       - name: Upgrade npm
         run: npm install -g npm@latest
 
       - name: Install
         run: npm ci
 
-      # `prepublishOnly` runs the full test suite first. Provenance is generated automatically
-      # with trusted publishing. Prereleases go under the `next` dist-tag.
-      - name: Publish
-        run: npm publish --tag "${{ needs.verify.outputs.prerelease == 'true' && 'next' || 'latest' }}"
+      # `prepublishOnly` runs the full test suite first. The version is staged, not published: it
+      # goes live once a maintainer approves it on npmjs.com with 2FA. Provenance is generated
+      # automatically with trusted publishing. Prereleases go under the `next` dist-tag.
+      - name: Stage on npm
+        run: npm stage publish --tag "${{ needs.verify.outputs.prerelease == 'true' && 'next' || 'latest' }}"
 
+      # Created right after staging, so the Release exists while the version awaits approval.
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}

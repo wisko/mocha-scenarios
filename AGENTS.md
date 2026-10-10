@@ -86,6 +86,7 @@ Local runs use mocha 12 from the lockfile; CI (`.github/workflows/ci.yml`) also 
   version in `package.json` and `package-lock.json`, commits "Release X.Y.Z" on `main` and pushes
   the tag `vX.Y.Z`. The tag push runs `.github/workflows/publish.yml`: it verifies that the tag
   matches the package version, that the commit is on `main` and that the changelog section exists,
-  then, after approval of the `npm` environment, publishes with npm trusted publishing (provenance
-  is automatic) and creates the GitHub Release from the changelog section.
+  then stages the version on npm with trusted publishing (provenance is automatic) and creates the
+  GitHub Release from the changelog section. The version goes live once the maintainer approves it
+  on npmjs.com with 2FA.
 - Any new global must be added to the `ScenarioGlobals` interface and the `declare global` block in `src/index.ts`, to `src/globals.ts`, covered by a fixture under `test/features/`, and documented in `README.md`. The interface key type and the globals test in `test/package.test.js` catch a missing entry.
