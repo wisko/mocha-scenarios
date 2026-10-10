@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-10
+
 ### Added
 
 - README section on watch and parallel mode: both work as is, and mocha's own restrictions on ES module spec files in watch mode and on `.only` in parallel mode are linked.
