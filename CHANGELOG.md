@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-10
+
 ### Added
 
 - JSDoc on the globals, shown by editors on hover and in completions.

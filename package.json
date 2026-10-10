@@ -1,6 +1,6 @@
 {
   "name": "mocha-scenarios",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Feature style testing for mocha",
   "keywords": [
     "mocha",
